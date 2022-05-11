@@ -13,9 +13,7 @@ namespace WebAPI.Models
 
         public string descricao { get; set; }
 
-        public bool ativo { get; set; }
-
-        public int duracao { get; set; }
+        public string duracao { get; set; }
 
         public string competencia { get; set; }
     }

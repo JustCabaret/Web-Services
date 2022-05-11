@@ -22,7 +22,7 @@ namespace WebAPI.Controllers
             SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
             conn.Open();
 
-            SqlCommand command = new SqlCommand("SELECT id_percurso AS ID, nome AS [Nome], descricao AS Descrição, duracao AS Duração, competencia AS Competência FROM percurso_formativo WHERE ativo = 0", conn);
+            SqlCommand command = new SqlCommand("SELECT id_percurso AS ID, nome AS [Nome], descricao AS Descrição, duracao AS Duração, competencia AS Competência FROM percurso_formativo WHERE ativo = 1", conn);
 
             SqlDataReader reader = command.ExecuteReader();
 
@@ -30,8 +30,10 @@ namespace WebAPI.Controllers
             {
                 PercursoFormacao percurso = new PercursoFormacao();
 
+                percurso.id_percurso = Convert.ToInt32(reader[0]);
                 percurso.nome = reader[1].ToString();
                 percurso.descricao = reader[2].ToString();
+                percurso.duracao = reader[3].ToString();
                 percurso.competencia = reader[4].ToString();
 
                 listaPercurso.Add(percurso);
@@ -41,25 +43,40 @@ namespace WebAPI.Controllers
             return listaPercurso;
         }
 
-        // GET: api/WebApis/5
-        public string Get(int id)
+        [Route("api/MetodoB")]
+        [HttpGet]
+        public List<PercursoFormacao> GetModulosFormacao(string id_percurso)
         {
-            return "value";
-        }
+            List<Modulo_Percurso> listaModuloPercurso = new List<Modulo_Percurso>();
 
-        // POST: api/WebApis
-        public void Post([FromBody] string value)
-        {
-        }
+            SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
+            conn.Open();
 
-        // PUT: api/WebApis/5
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            if (string.IsNullOrEmpty(id_percurso))
+            {
+                SqlCommand command = new SqlCommand("SELECT id_mod_percurso AS ID,sequencia AS Sequência, titulo AS Titulo, carga_horaria AS Duração FROM modulo_percurso RIGHT JOIN modulo ON modulo_percurso.FK_id_modulo = modulo.id_modulo ORDER BY sequencia ASC ", conn);
 
-        // DELETE: api/WebApis/5
-        public void Delete(int id)
-        {
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Modulo_Percurso mod_percurso = new Modulo_Percurso();
+
+                    mod_percurso.id_mod_percurso = Convert.ToInt32(reader[0]);
+                    mod_percurso.sequencia = Convert.ToInt32(reader[1]);
+                    mod_percurso.titulo = reader[2].ToString();
+                    mod_percurso.duracao = Convert.ToInt32(reader[3]);
+
+                    listaModuloPercurso.Add(mod_percurso);
+                }
+            }
+            else
+            {
+            }
+
+            conn.Close();
+
+            return listaModuloPercurso;
         }
     }
 }
