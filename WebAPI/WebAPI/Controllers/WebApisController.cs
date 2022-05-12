@@ -45,7 +45,7 @@ namespace WebAPI.Controllers
 
         [Route("api/MetodoB")]
         [HttpGet]
-        public List<PercursoFormacao> GetModulosFormacao(string id_percurso)
+        public List<Modulo_Percurso> GetModulosFormacao(string id_percurso)
         {
             List<Modulo_Percurso> listaModuloPercurso = new List<Modulo_Percurso>();
 
@@ -72,11 +72,126 @@ namespace WebAPI.Controllers
             }
             else
             {
+                SqlCommand command = new SqlCommand($"SELECT id_mod_percurso AS ID,sequencia AS Sequência, titulo AS Titulo, carga_horaria AS Duração FROM modulo_percurso RIGHT JOIN modulo ON modulo_percurso.FK_id_modulo = modulo.id_modulo WHERE modulo_percurso.FK_id_percurso = '{id_percurso}' ORDER BY sequencia ASC ", conn);
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Modulo_Percurso mod_percurso = new Modulo_Percurso();
+
+                    mod_percurso.id_mod_percurso = Convert.ToInt32(reader[0]);
+                    mod_percurso.sequencia = Convert.ToInt32(reader[1]);
+                    mod_percurso.titulo = reader[2].ToString();
+                    mod_percurso.duracao = Convert.ToInt32(reader[3]);
+
+                    listaModuloPercurso.Add(mod_percurso);
+                }
             }
 
             conn.Close();
 
             return listaModuloPercurso;
+        }
+
+        [Route("api/MetodoC")]
+        [HttpPost]
+        public string PostFormacao(int IdModulo, int NFuncionario, int Estado, DateTime Data, string Percentagem, string Classificacao, string Avaliacao)
+        {
+            SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
+            conn.Open();
+
+            SqlCommand command = new SqlCommand("INSERT INTO formacao(FK_id_modulo, FK_id_funcionario, FK_id_estado_formacao, data_inicio, percentagem, nota , conclusao_dada, ativo) " +
+                "VALUES ('" + IdModulo + "', '" + NFuncionario + "', '" + Estado + "', '" + Data.ToString("yyyy-MM-dd") + "', '" + Percentagem + "','" + Classificacao + "', '" + Avaliacao + "', 1); ", conn);
+
+            command.ExecuteNonQuery();
+
+            string msg = "Inserido com sucesso!";
+
+            conn.Close();
+            return msg;
+        }
+
+        [Route("api/MetodoD")]
+        [HttpGet]
+        public List<Formacao> GetFormacao(string id_func)
+        {
+            List<Formacao> listaFormacao = new List<Formacao>();
+
+            SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
+            conn.Open();
+
+            SqlCommand command = new SqlCommand("SELECT id_formacao AS ID, FK_id_modulo AS [ID do Módulo], FK_id_funcionario AS [ID do Funcionário], FK_id_estado_formacao AS [Estado da Formação], data_inicio AS [Data de Início], percentagem AS Percentagem, nota AS Classificação, conclusao_dada AS Avaliação FROM formacao WHERE FK_id_funcionario = '" + id_func + "' AND ativo = 1", conn);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Formacao form = new Formacao();
+
+                form.id_formacao = Convert.ToInt32(reader[0]);
+                form.FK_id_modulo = Convert.ToInt32(reader[1]);
+                form.FK_id_funcionario = Convert.ToInt32(reader[2]);
+                form.FK_id_estado_formacao = Convert.ToInt32(reader[3]);
+                form.data_inicio = Convert.ToDateTime(reader[4]);
+                form.percentagem = reader[5].ToString();
+                form.nota = reader[6].ToString();
+                form.conclusão_dada = reader[7].ToString();
+
+                listaFormacao.Add(form);
+            }
+
+            conn.Close();
+
+            return listaFormacao;
+        }
+
+        [Route("api/MetodoE")]
+        [HttpGet]
+        public string UpdFormacao(int IDFormacao, int IDModulo, int NFuncionario, int Estado, DateTime Data, int Percentagem, int Classificacao, string Avaliacao)
+        {
+            SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
+            conn.Open();
+
+            SqlCommand command = new SqlCommand("UPDATE formacao SET FK_id_modulo = '" + IDModulo + "', FK_id_funcionario = '" + NFuncionario + "', FK_id_estado_formacao = '" + Estado + "', data_inicio = '" + Data.ToString("yyyy-MM-dd") + "', percentagem = '" + Percentagem + "', nota = '" + Classificacao + "', conclusao_dada = '" + Avaliacao + "' WHERE id_formacao = '" + IDFormacao + "'", conn);
+
+            command.ExecuteNonQuery();
+
+            string msg = "Atualizado com sucesso!";
+
+            conn.Close();
+            return msg;
+        }
+
+        [Route("api/MetodoF")]
+        [HttpGet]
+        public List<Modulo> GetModulo()
+        {
+            List<Modulo> listaModulo = new List<Modulo>();
+
+            SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
+            conn.Open();
+
+            SqlCommand command = new SqlCommand("SELECT id_modulo AS ID, titulo AS Titulo, carga_horaria AS [Carga Horária], descricao AS Descrição, competencia AS Competência FROM modulo WHERE ativo = 1", conn);
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Modulo mod = new Modulo();
+
+                mod.id_modulo = Convert.ToInt32(reader[0]);
+                mod.titulo = reader[1].ToString();
+                mod.carga_horaria = reader[2].ToString();
+                mod.descricao = reader[3].ToString();
+                mod.competencia = reader[4].ToString();
+
+                listaModulo.Add(mod);
+            }
+
+            conn.Close();
+
+            return listaModulo;
         }
     }
 }
