@@ -12,6 +12,7 @@ namespace WebAPI.Controllers
     public class WebApisController : ApiController
     {
         // GET: api/WebApis
+        public string msg = "Não foi substituido";
 
         [Route("api/MetodoA")]
         [HttpGet]
@@ -104,9 +105,16 @@ namespace WebAPI.Controllers
             SqlCommand command = new SqlCommand("INSERT INTO formacao(FK_id_modulo, FK_id_funcionario, FK_id_estado_formacao, data_inicio, percentagem, nota , conclusao_dada, ativo) " +
                 "VALUES ('" + IdModulo + "', '" + NFuncionario + "', '" + Estado + "', '" + Data.ToString("yyyy-MM-dd") + "', '" + Percentagem + "','" + Classificacao + "', '" + Avaliacao + "', 1); ", conn);
 
-            command.ExecuteNonQuery();
+            int result = command.ExecuteNonQuery();
 
-            string msg = "Inserido com sucesso!";
+            if (result == 0)
+            {
+                msg = "Erro na Inserção!";
+            }
+            else
+            {
+                msg = "Inserido com sucesso!";
+            }
 
             conn.Close();
             return msg;
@@ -155,9 +163,18 @@ namespace WebAPI.Controllers
 
             SqlCommand command = new SqlCommand("UPDATE formacao SET FK_id_modulo = '" + IDModulo + "', FK_id_funcionario = '" + NFuncionario + "', FK_id_estado_formacao = '" + Estado + "', data_inicio = '" + Data.ToString("yyyy-MM-dd") + "', percentagem = '" + Percentagem + "', nota = '" + Classificacao + "', conclusao_dada = '" + Avaliacao + "' WHERE id_formacao = '" + IDFormacao + "'", conn);
 
-            command.ExecuteNonQuery();
+            int result = command.ExecuteNonQuery();
 
             string msg = "Atualizado com sucesso!";
+
+            if (result == 0)
+            {
+                msg = "Erro na Atualização!";
+            }
+            else
+            {
+                msg = "Atualizado com sucesso!";
+            }
 
             conn.Close();
             return msg;
