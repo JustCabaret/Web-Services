@@ -14,6 +14,7 @@ namespace WebAPI.Controllers
         // GET: api/WebApis
         public string msg = "Não foi substituido";
 
+        //Listar Dados da Tabela
         [Route("api/MetodoA")]
         [HttpGet]
         public List<PercursoFormacao> GetListPercursos()
@@ -44,6 +45,7 @@ namespace WebAPI.Controllers
             return listaPercurso;
         }
 
+        //Listar Dados da Tabela de acordo com o id
         [Route("api/MetodoB")]
         [HttpGet]
         public List<Modulo_Percurso> GetModulosFormacao(string id_percurso)
@@ -95,6 +97,7 @@ namespace WebAPI.Controllers
             return listaModuloPercurso;
         }
 
+        //Inserir Dados na Tabela
         [Route("api/MetodoC")]
         [HttpPost]
         public string PostFormacao(int IdModulo, int NFuncionario, int Estado, DateTime Data, string Percentagem, string Classificacao, string Avaliacao)
@@ -120,6 +123,7 @@ namespace WebAPI.Controllers
             return msg;
         }
 
+        //Listar Dados da Tabela de acordo com o id
         [Route("api/MetodoD")]
         [HttpGet]
         public List<Formacao> GetFormacao(string id_func)
@@ -154,6 +158,7 @@ namespace WebAPI.Controllers
             return listaFormacao;
         }
 
+        //Atualizar Dados da Tabela
         [Route("api/MetodoE")]
         [HttpGet]
         public string UpdFormacao(int IDFormacao, int IDModulo, int NFuncionario, int Estado, DateTime Data, int Percentagem, int Classificacao, string Avaliacao)
@@ -180,6 +185,7 @@ namespace WebAPI.Controllers
             return msg;
         }
 
+        //Listar Dados da Tabela
         [Route("api/MetodoF")]
         [HttpGet]
         public List<Modulo> GetModulo()
