@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -100,13 +101,15 @@ namespace WebAPI.Controllers
         //Inserir Dados na Tabela
         [Route("api/MetodoC")]
         [HttpPost]
-        public string PostFormacao(int IdModulo, int NFuncionario, int Estado, DateTime Data, string Percentagem, string Classificacao, string Avaliacao)
+        public string PostFormacao([FromBody] object json)
         {
+            Formacao formacao = JsonConvert.DeserializeObject<Formacao>(json.ToString());
+
             SqlConnection conn = new SqlConnection("Data Source=CABARET-PC;Initial Catalog=BDApp;Integrated Security=True");
             conn.Open();
 
             SqlCommand command = new SqlCommand("INSERT INTO formacao(FK_id_modulo, FK_id_funcionario, FK_id_estado_formacao, data_inicio, percentagem, nota , conclusao_dada, ativo) " +
-                "VALUES ('" + IdModulo + "', '" + NFuncionario + "', '" + Estado + "', '" + Data.ToString("yyyy-MM-dd") + "', '" + Percentagem + "','" + Classificacao + "', '" + Avaliacao + "', 1); ", conn);
+                "VALUES ('" + formacao.FK_id_modulo + "', '" + formacao.FK_id_funcionario + "', '" + formacao.FK_id_estado_formacao + "', '" + formacao.data_inicio.ToString("yyyy-MM-dd") + "', '" + formacao.percentagem + "','" + formacao.conclusão_dada + "', '" + formacao.nota + "', 1); ", conn);
 
             int result = command.ExecuteNonQuery();
 
